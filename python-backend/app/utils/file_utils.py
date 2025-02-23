@@ -1,3 +1,0 @@
-def handle_file():
-    # ...existing code...
-    return "File handled"

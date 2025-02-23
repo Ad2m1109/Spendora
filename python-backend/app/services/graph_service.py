@@ -1,3 +1,0 @@
-def generate_graph_logic():
-    # ...existing code...
-    return "Graph logic executed"

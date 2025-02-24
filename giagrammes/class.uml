@@ -1,0 +1,52 @@
+@startuml
+
+class User {
+    +userId: int
+    +name: String
+    +email: String
+    +password: String
+    +register()
+    +login()
+    +editProfile()
+}
+
+class Transaction {
+    +transactionId: int
+    +amount: double
+    +date: Date
+    +description: String
+    +category: Category
+    +addTransaction()
+    +editTransaction()
+    +deleteTransaction()
+}
+
+class Category {
+    +categoryId: int
+    +categoryName: String
+    +assignCategory()
+}
+
+class FinancialGoal {
+    +goalId: int
+    +goalName: String
+    +targetAmount: double
+    +currentAmount: double
+    +setGoal()
+    +updateGoalProgress()
+}
+
+class Report {
+    +reportId: int
+    +reportType: String
+    +generatedDate: Date
+    +generateReport()
+    +exportCSV()
+}
+
+User "1" -- "*" Transaction : owns
+User "1" -- "*" FinancialGoal : sets
+Transaction "*" -- "1" Category : categorized as
+User "1" -- "*" Report : generates
+
+@enduml

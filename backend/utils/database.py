@@ -1,13 +1,11 @@
 import pymysql
 from flask import current_app
+from contextlib import contextmanager
 
 def get_db():
-    # Split host and port from the configuration
-    host, port = current_app.config['MYSQL_HOST'].split(':')
-    
     return pymysql.connect(
-        host=host,
-        port=int(port),  # Convert port to integer
+        host=current_app.config['MYSQL_HOST'].split(':')[0],
+        port=int(current_app.config['MYSQL_HOST'].split(':')[1]),
         user=current_app.config['MYSQL_USER'],
         password=current_app.config['MYSQL_PASSWORD'],
         database=current_app.config['MYSQL_DB'],

@@ -1,0 +1,78 @@
+@startuml
+' Define the actors
+:User: as user
+
+' Define the system boundary
+rectangle "Spendora Personal Finance Tracking Application" {
+  ' Authentication
+  usecase "Register" as UC1
+  usecase "Login" as UC2
+  usecase "Logout" as UC3
+  usecase "Manage Profile" as UC4
+
+  ' Transaction Management
+  usecase "Add Transaction" as UC5
+  usecase "Edit Transaction" as UC6
+  usecase "Delete Transaction" as UC7
+  usecase "Categorize Transaction" as UC8
+
+  ' Dashboard & Visualization
+  usecase "View Dashboard" as UC9
+  usecase "View Transaction Summary" as UC10
+  usecase "View Expense Graphs" as UC11
+  usecase "Track Balance Over Time" as UC12
+
+  ' Goals
+  usecase "Set Savings Goal" as UC13
+  usecase "Track Goal Progress" as UC14
+  usecase "Receive Goal Notifications" as UC15
+
+  ' Reports
+  usecase "Generate Monthly Report" as UC16
+  usecase "Export Transactions as CSV" as UC17
+
+  ' Optional Features
+  usecase "Toggle Dark Mode" as UC18
+  usecase "Sync Bank Transactions" as UC19 #lightgray
+  usecase "Manage Multiple Currencies" as UC20 #lightgray
+}
+
+' Define relationships between actors and use cases
+user --> UC1
+user --> UC2
+user --> UC3
+user --> UC4
+
+user --> UC5
+user --> UC6
+user --> UC7
+user --> UC8
+
+user --> UC9
+user --> UC10
+user --> UC11
+user --> UC12
+
+user --> UC13
+user --> UC14
+user --> UC15
+
+user --> UC16
+user --> UC17
+
+user --> UC18
+user --> UC19
+user --> UC20
+
+' Define include relationships
+UC2 <.. UC1 : <<include>>
+UC9 <.. UC10 : <<include>>
+UC9 <.. UC11 : <<include>>
+UC9 <.. UC12 : <<include>>
+
+UC13 <.. UC14 : <<include>>
+UC14 <.. UC15 : <<include>>
+
+' Organize layout
+left to right direction
+@enduml

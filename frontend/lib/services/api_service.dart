@@ -5,10 +5,10 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 
 class ApiService {
   static String get baseUrl {
-  if (kIsWeb) {
+    if (kIsWeb) {
       return "http://localhost:5000";
-    } else if (Platform.isAndroid) {
-      return "http://10.0.2.2:5000";
+    } else if (Platform.isAndroid || Platform.isIOS) {
+      return "http://192.168.0.197:5000";
     } else {
       return "http://localhost:5000";
     }
@@ -27,7 +27,6 @@ class ApiService {
     );
 
     if (response.statusCode != 201) {
-      // Parse error message if available
       try {
         final errorData = json.decode(response.body);
         final errorMessage = errorData['message'] ?? 'Failed to add user';
@@ -50,12 +49,8 @@ class ApiService {
     );
 
     if (response.statusCode == 200) {
-      final responseData = json.decode(response.body);
-
-      // Return the full response which should include userId, name, token, etc.
-      return responseData;
+      return json.decode(response.body);
     } else {
-      // Parse error message if available
       try {
         final errorData = json.decode(response.body);
         final errorMessage = errorData['message'] ?? 'Unknown error occurred';
@@ -91,10 +86,7 @@ class ApiService {
 
   // Update user profile
   static Future<Map<String, dynamic>> updateUserProfile(
-      String userId,
-      Map<String, dynamic> userData,
-      String token
-      ) async {
+      String userId, Map<String, dynamic> userData, String token) async {
     final response = await http.put(
       Uri.parse('$baseUrl/users/$userId'),
       headers: {
@@ -119,11 +111,7 @@ class ApiService {
 
   // Change password
   static Future<void> changePassword(
-      String userId,
-      String currentPassword,
-      String newPassword,
-      String token
-      ) async {
+      String userId, String currentPassword, String newPassword, String token) async {
     final response = await http.post(
       Uri.parse('$baseUrl/auth/change-password'),
       headers: {
@@ -187,6 +175,36 @@ class ApiService {
       } catch (_) {
         throw Exception('Logout failed');
       }
+    }
+  }
+
+  // Reset Password
+  static Future<void> resetPassword(String token, String newPassword) async {
+    final url = Uri.parse('$baseUrl/auth/reset-password/confirm'); // Adjust endpoint as needed
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'token': token,
+          'password': newPassword,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        // Password reset successful
+        return;
+      } else {
+        // Handle different status codes
+        final errorData = jsonDecode(response.body);
+        throw errorData['message'] ?? 'Failed to reset password';
+      }
+    } catch (e) {
+      // Re-throw to be handled by the UI
+      throw 'Password reset failed: $e';
     }
   }
 }

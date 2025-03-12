@@ -3,7 +3,8 @@ import 'package:frontend/custom_scaffold.dart';
 import 'package:frontend/sign_up_page.dart';
 import 'package:frontend/services/api_service.dart';
 import 'package:frontend/home_screen.dart';
-import 'package:frontend/utils/user_preferences.dart'; 
+import 'package:frontend/utils/user_preferences.dart';
+import 'package:frontend/forgot_password_page.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -21,6 +22,23 @@ class _SignInPageState extends State<SignInPage> {
   String errorMessage = '';
 
   @override
+  void initState() {
+    super.initState();
+    // Load saved credentials when the page initializes
+    _loadSavedCredentials();
+  }
+
+  Future<void> _loadSavedCredentials() async {
+    final savedCredentials = await UserPreferences.getRememberedCredentials();
+
+    setState(() {
+      _emailController.text = savedCredentials['email'];
+      _passwordController.text = savedCredentials['password'];
+      rememberPassword = savedCredentials['rememberMe'];
+    });
+  }
+
+  @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
@@ -35,17 +53,25 @@ class _SignInPageState extends State<SignInPage> {
             _emailController.text.trim(), _passwordController.text);
 
         // Store user information
-        final userId = response['userId'];
+        final userId = response['userId'].toString();
         final name = response['name']; // Assuming the API returns the user's name
         final email = _emailController.text.trim();
+        final token = response['token']; // Ensure this matches your API response
 
-        // Save user info
+        // Save user info and token
         await UserPreferences.saveUserInfo(userId, name, email);
+        await UserPreferences.saveUserToken(token); // Save the token
 
-        // Clear any previous error messages
-        setState(() {
-          errorMessage = '';
-        });
+        // Save credentials if remember me is checked
+        await UserPreferences.saveRememberedCredentials(
+            _emailController.text.trim(),
+            _passwordController.text,
+            rememberPassword
+        );
+
+        // Debug logs
+        print('UserId saved: $userId');
+        print('Token saved: $token');
 
         // Show success snackbar
         ScaffoldMessenger.of(context)
@@ -57,11 +83,12 @@ class _SignInPageState extends State<SignInPage> {
           MaterialPageRoute(builder: (context) => const HomeScreen()),
         );
       } catch (e) {
+        // Set error message
         setState(() {
           errorMessage = e.toString();
         });
 
-        // Show error snackbar
+        // Show error snackbar instead of displaying as text
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text('Login failed: $errorMessage'),
           backgroundColor: Colors.red,
@@ -84,150 +111,164 @@ class _SignInPageState extends State<SignInPage> {
             child: Container(
               padding: const EdgeInsets.fromLTRB(25, 50, 25, 20),
               decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(40),
-                    topRight: Radius.circular(40),
-                  )),
-              child: Form(
-                key: _formSignInKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Welcome Back!",
-                      style: TextStyle(
-                        fontSize: 30,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                    ),
-                    const SizedBox(height: 25),
-                    // Email TextField
-                    TextFormField(
-                      controller: _emailController,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your E-mail';
-                        }
-                        return null;
-                      },
-                      decoration: InputDecoration(
-                        label: const Text('E-mail'),
-                        hintText: "Enter E-mail",
-                        hintStyle: const TextStyle(color: Colors.black54),
-                        border: OutlineInputBorder(
-                          borderSide: const BorderSide(color: Colors.black45),
-                          borderRadius: BorderRadius.circular(10),
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(40),
+                  topRight: Radius.circular(40),
+                ),
+              ),
+              child: SingleChildScrollView(
+                child: Form(
+                  key: _formSignInKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const Text(
+                        "Welcome Back!",
+                        style: TextStyle(
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
                         ),
-                        enabledBorder: OutlineInputBorder(
-                            borderSide:
-                            const BorderSide(color: Colors.black38)),
                       ),
-                    ),
-                    const SizedBox(height: 25),
-                    // Password TextField
-                    TextFormField(
-                      controller: _passwordController,
-                      obscureText: true,
-                      obscuringCharacter: '*',
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your Password';
-                        }
-                        return null;
-                      },
-                      decoration: InputDecoration(
-                        label: const Text('Password'),
-                        hintText: "Enter Password",
-                        hintStyle: const TextStyle(color: Colors.black54),
-                        border: OutlineInputBorder(
-                          borderSide: const BorderSide(color: Colors.black45),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                            borderSide:
-                            const BorderSide(color: Colors.black38)),
-                      ),
-                    ),
-                    const SizedBox(height: 25),
-                    // Remember me and Forgot Password row
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Checkbox(
-                          value: rememberPassword,
-                          onChanged: (bool? value) {
-                            setState(() {
-                              rememberPassword = value!;
-                            });
-                          },
-                        ),
-                        Container(
-                          padding: const EdgeInsets.fromLTRB(0, 0, 100, 0),
-                          child: const Text(
-                            "Remember me",
-                            style: TextStyle(color: Colors.black54),
+                      const SizedBox(height: 25),
+                      // Email TextField
+                      TextFormField(
+                        controller: _emailController,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your E-mail';
+                          }
+                          return null;
+                        },
+                        decoration: InputDecoration(
+                          label: const Text('E-mail'),
+                          hintText: "Enter E-mail",
+                          hintStyle: const TextStyle(color: Colors.black54),
+                          border: OutlineInputBorder(
+                            borderSide: const BorderSide(color: Colors.black45),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(color: Colors.black38),
                           ),
                         ),
-                        GestureDetector(
-                          onTap: () {
-                            // TODO: Implement forgot password functionality
-                          },
-                          child: const Text(
-                            "Forgot Password?",
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                        )
-                      ],
-                    ),
-                    const SizedBox(height: 25),
-                    // Sign In Button
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: signInUser,
-                        child: const Text("Sign In"),
                       ),
-                    ),
-                    // Error Message
-                    if (errorMessage.isNotEmpty)
+                      const SizedBox(height: 25),
+                      // Password TextField
+                      TextFormField(
+                        controller: _passwordController,
+                        obscureText: true,
+                        obscuringCharacter: '*',
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your Password';
+                          }
+                          return null;
+                        },
+                        decoration: InputDecoration(
+                          label: const Text('Password'),
+                          hintText: "Enter Password",
+                          hintStyle: const TextStyle(color: Colors.black54),
+                          border: OutlineInputBorder(
+                            borderSide: const BorderSide(color: Colors.black45),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(color: Colors.black38),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 25),
+                      // Remember me and Forgot Password row
                       Padding(
-                        padding: const EdgeInsets.only(top: 10),
-                        child: Text(
-                          errorMessage,
-                          style: TextStyle(
-                            color: Colors.red,
-                            fontWeight: FontWeight.bold,
-                          ),
+                        padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            // Remember Me Checkbox
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Transform.scale(
+                                  scale: 0.9, // Make checkbox slightly smaller
+                                  child: Checkbox(
+                                    value: rememberPassword,
+                                    onChanged: (bool? value) {
+                                      setState(() {
+                                        rememberPassword = value!;
+                                      });
+                                    },
+                                  ),
+                                ),
+                                const Text(
+                                  "Remember me",
+                                  style: TextStyle(
+                                    color: Colors.black54,
+                                    fontSize: 13,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            // Forgot Password text
+                            GestureDetector(
+                              onTap: () {
+                                // Navigate to Forgot Password Page
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const ForgotPasswordPage(),
+                                  ),
+                                );
+                              },
+                              child: const Text(
+                                "Forgot Password?",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 13,
+                                  color: Colors.blue, // Highlight color
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    const SizedBox(height: 25),
-                    // Sign Up navigation
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text("Don't have an account? "),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const SignUpPage(),
+                      const SizedBox(height: 25),
+                      // Sign In Button
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: signInUser,
+                          child: const Text("Sign In"),
+                        ),
+                      ),
+                      const SizedBox(height: 25),
+                      // Sign Up navigation
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text("Don't have an account? "),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const SignUpPage(),
+                                ),
+                              );
+                            },
+                            child: const Text(
+                              "Sign Up",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.green,
                               ),
-                            );
-                          },
-                          child: const Text(
-                            "Sign Up",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.green,
                             ),
                           ),
-                        ),
-                      ],
-                    )
-                  ],
+                        ],
+                      )
+                    ],
+                  ),
                 ),
               ),
             ),

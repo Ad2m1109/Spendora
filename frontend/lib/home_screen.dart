@@ -1,26 +1,33 @@
 import 'package:flutter/material.dart';
-
 import 'account/home_page.dart';
 import 'account/transaction_page.dart';
 import 'account/goal_page.dart';
 import 'account/support_page.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final int selectedNavIndex;
+
+  const HomeScreen({super.key, this.selectedNavIndex = 0});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _selectedNavIndex = 0;
+  late int _selectedNavIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedNavIndex = widget.selectedNavIndex;
+  }
 
   // List of page widgets to display
   final List<Widget> _pages = [
     const HomePage(),
-    const TransactionPage(),
-    const GoalPage(),
-    const SupportPage(),
+    TransactionPage(),
+    GoalPage(),
+    SupportPage(),
   ];
 
   @override

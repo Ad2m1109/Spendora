@@ -46,7 +46,7 @@ class _HomePageState extends State<HomePage> {
               children: [
                 const TextSpan(text: 'Welcome to Spendora, '),
                 TextSpan(
-                  text: userName, // Dynamic user name instead of hardcoded "Aladdin"
+                  text: userName,
                   style: const TextStyle(
                     fontStyle: FontStyle.italic,
                   ),
@@ -67,9 +67,17 @@ class _HomePageState extends State<HomePage> {
 
           const SizedBox(height: 24),
 
-          // Welcome text
+          // Title and introduction
           const Text(
-            'Spendora is your ultimate personal finance companion, designed to help you take control of your money with ease. Whether you\'re tracking daily expenses, managing your income, or setting ambitious savings goals, Spendora provides intuitive tools to simplify financial management.',
+            'Take Control of Your Finances',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            'Spendora is your personal finance tracking application, designed to help you manage your income, expenses, and savings effortlessly. With a user-friendly interface and powerful features, Spendora ensures that you stay in control of your financial health, no matter where you are.',
             style: TextStyle(
               fontSize: 16,
               height: 1.5,
@@ -78,8 +86,74 @@ class _HomePageState extends State<HomePage> {
 
           const SizedBox(height: 16),
 
+          // Title and transaction management
           const Text(
-            'With interactive dashboards, insightful reports, and smart budgeting features, you\'ll gain a clear understanding of your financial health. Plus, with secure data encryption and seamless access across devices, you can manage your finances with confidence anytime, anywhere.',
+            'Track Every Transaction with Ease',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            'Adding, editing, and categorizing your financial transactions has never been simpler. Whether it’s your salary, rent, groceries, or entertainment expenses, Spendora allows you to keep an accurate record of every transaction, helping you understand where your money goes.',
+            style: TextStyle(
+              fontSize: 16,
+              height: 1.5,
+            ),
+          ),
+
+          const SizedBox(height: 16),
+
+          // Title and visualization
+          const Text(
+            'Visualize Your Finances',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            'Numbers alone can be overwhelming, but Spendora transforms your financial data into beautiful and insightful graphs. Get a clear overview of your spending habits, track your financial trends over time, and gain valuable insights to make informed decisions.',
+            style: TextStyle(
+              fontSize: 16,
+              height: 1.5,
+            ),
+          ),
+
+          const SizedBox(height: 16),
+
+          // Title and savings goals
+          const Text(
+            'Set and Achieve Your Savings Goals',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            'Planning for a vacation, a new gadget, or building an emergency fund? Spendora lets you set personalized savings goals and track your progress step by step. You’ll receive notifications and alerts to keep you motivated and on track toward reaching your financial objectives.',
+            style: TextStyle(
+              fontSize: 16,
+              height: 1.5,
+            ),
+          ),
+
+          const SizedBox(height: 16),
+
+          // Title and security
+          const Text(
+            'Secure and Reliable',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            'Your financial data is protected with industry-standard encryption, ensuring your information remains private and secure. With safe authentication and backup options, you can trust Spendora to safeguard your finances while giving you seamless access across devices.',
             style: TextStyle(
               fontSize: 16,
               height: 1.5,
@@ -98,7 +172,7 @@ class _HomePageState extends State<HomePage> {
               ),
               children: [
                 TextSpan(
-                  text: 'Start your journey toward smarter spending and better savings today with Spendora! ',
+                  text: 'Start your journey to financial freedom today with Spendora! ',
                 ),
                 WidgetSpan(
                   child: Padding(

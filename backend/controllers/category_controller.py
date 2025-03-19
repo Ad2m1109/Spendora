@@ -4,7 +4,7 @@ from models.category import Category
 category_blueprint = Blueprint('category', __name__)
 
 # Route to get all categories
-@category_blueprint.route('/categories', methods=['GET'])
+@category_blueprint.route('', methods=['GET'])
 def get_categories():
     try:
         categories = Category.get_all_categories()
@@ -13,7 +13,7 @@ def get_categories():
         return jsonify({"error": str(e)}), 500
 
 # Route to add a new category
-@category_blueprint.route('/categories', methods=['POST'])
+@category_blueprint.route('', methods=['POST'])
 def add_category():
     try:
         data = request.get_json()
@@ -24,7 +24,7 @@ def add_category():
         return jsonify({"error": str(e)}), 500
 
 # Route to delete a category by ID
-@category_blueprint.route('/categories/<int:category_id>', methods=['DELETE'])
+@category_blueprint.route('/<int:category_id>', methods=['DELETE'])
 def delete_category(category_id):
     try:
         # Add logic to delete a category (you'll need to implement this in the Category model)

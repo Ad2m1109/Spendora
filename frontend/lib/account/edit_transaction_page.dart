@@ -4,23 +4,42 @@ import '../services/transaction_service.dart'; // Import the transaction service
 import '../services/category_service.dart'; // Import the category service
 import 'package:frontend/utils/user_preferences.dart'; // Import user preferences for token and userId
 
-class AddTransactionPage extends StatefulWidget {
+class EditTransactionPage extends StatefulWidget {
+  final Map<String, dynamic> transaction;
+
+  EditTransactionPage({required this.transaction});
+
   @override
-  _AddTransactionPageState createState() => _AddTransactionPageState();
+  _EditTransactionPageState createState() => _EditTransactionPageState();
 }
 
-class _AddTransactionPageState extends State<AddTransactionPage> {
+class _EditTransactionPageState extends State<EditTransactionPage> {
   final _formKey = GlobalKey<FormState>();
-  final _amountController = TextEditingController();
-  final _descriptionController = TextEditingController();
+  late TextEditingController _amountController;
+  late TextEditingController _descriptionController;
   DateTime? _selectedDate;
   String? _selectedCategory;
   List<Map<String, dynamic>> _categories = [];
+  String? _initializationError;
 
   @override
   void initState() {
     super.initState();
-    _loadCategories();
+    try {
+      _amountController =
+          TextEditingController(text: widget.transaction['amount'].toString());
+      _descriptionController =
+          TextEditingController(text: widget.transaction['description']);
+      _selectedDate = DateFormat('EEE, dd MMM yyyy HH:mm:ss zzz')
+          .parse(widget.transaction['date']);
+      _selectedCategory = widget.transaction['categoryId'].toString();
+      _loadCategories();
+    } catch (e) {
+      print('Error initializing EditTransactionPage: $e'); // Debug log
+      setState(() {
+        _initializationError = 'Failed to initialize page: $e';
+      });
+    }
   }
 
   Future<void> _loadCategories() async {
@@ -30,6 +49,7 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
         _categories = categories.cast<Map<String, dynamic>>();
       });
     } catch (e) {
+      print('Error loading categories: $e'); // Debug log
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to load categories: $e')),
       );
@@ -39,7 +59,7 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
+      initialDate: _selectedDate ?? DateTime.now(),
       firstDate: DateTime(2000),
       lastDate: DateTime(2101),
     );
@@ -52,9 +72,20 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (_initializationError != null) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text('Edit Transaction'),
+        ),
+        body: Center(
+          child: Text(_initializationError!),
+        ),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Transaction'),
+        title: Text('Edit Transaction'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -137,8 +168,8 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                         return;
                       }
 
-                      await TransactionService.createTransaction(
-                        userId,
+                      await TransactionService.updateTransaction(
+                        widget.transaction['transactionId'],
                         double.parse(_amountController.text),
                         DateFormat('yyyy-MM-dd')
                             .format(_selectedDate!), // Format the date
@@ -148,18 +179,19 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                       );
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                            content: Text('Transaction created successfully')),
+                            content: Text('Transaction updated successfully')),
                       );
                       Navigator.pop(context); // Return to the transaction page
                     } catch (e) {
+                      print('Error updating transaction: $e'); // Debug log
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                            content: Text('Failed to create transaction: $e')),
+                            content: Text('Failed to update transaction: $e')),
                       );
                     }
                   }
                 },
-                child: Text('Add Transaction'),
+                child: Text('Update Transaction'),
               ),
             ],
           ),

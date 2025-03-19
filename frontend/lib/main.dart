@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/welcome_screen.dart';
+import 'package:frontend/sign_in_page.dart'; // Import the sign-in page
 
 void main() {
   runApp(const MyApp());
@@ -11,14 +12,15 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      debugShowCheckedModeBanner: false,  // ✅ Removes debug banner
+      title: 'Spendora',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
       ),
-      home: WelcomeScreen(),
+      initialRoute: '/login', // Set the initial route
       routes: {
-        '/welcome': (context) => WelcomeScreen(), // Example of named route
+        '/login': (context) => const SignInPage(), // Define the login route
+        '/welcome': (context) => WelcomeScreen(),
       },
     );
   }

@@ -7,3 +7,4 @@ class Config:
     MYSQL_PASSWORD = 'root'
     MYSQL_DB = 'spendora'
     MYSQL_CURSORCLASS = 'DictCursor'
+    UPLOAD_FOLDER = os.environ.get('UPLOAD_FOLDER', 'uploads')

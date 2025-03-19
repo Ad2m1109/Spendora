@@ -31,3 +31,29 @@ class User:
                 return user
         finally:
             db.close()
+
+    @staticmethod
+    def get_user_by_id(user_id):
+        db = get_db()
+        try:
+            with db.cursor() as cursor:
+                sql = "SELECT * FROM users WHERE userId = %s"
+                cursor.execute(sql, (user_id,))
+                return cursor.fetchone()
+        finally:
+            db.close()
+
+    @staticmethod
+    def update_user_profile(user_id, name, email):
+        db = get_db()
+        try:
+            with db.cursor() as cursor:
+                sql = "UPDATE users SET name = %s, email = %s WHERE userId = %s"
+                cursor.execute(sql, (name, email, user_id))
+                db.commit()
+                return cursor.rowcount
+        except Exception as e:
+            db.rollback()
+            raise
+        finally:
+            db.close()

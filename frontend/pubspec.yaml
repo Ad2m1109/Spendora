@@ -33,6 +33,7 @@ dependencies:
   http: ^1.3.0
   shared_preferences: ^2.5.2
   intl: ^0.18.1
+  image_picker: ^0.8.4+4
 
 dev_dependencies:
   flutter_lints: ^5.0.0
@@ -56,6 +57,7 @@ flutter:
     - assets/transaction.png
     - assets/goal.png
     - assets/support.png
+    - assets/anonymous_user.jpg  # Add this line
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.

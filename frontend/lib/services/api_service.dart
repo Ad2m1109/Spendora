@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'dart:io' show Platform;
+import 'dart:io' show Platform, File;
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 class ApiService {
@@ -38,7 +38,8 @@ class ApiService {
   }
 
   // Sign in (login)
-  static Future<Map<String, dynamic>> signIn(String email, String password) async {
+  static Future<Map<String, dynamic>> signIn(
+      String email, String password) async {
     final response = await http.post(
       Uri.parse('$baseUrl/auth/login'),
       headers: {'Content-Type': 'application/json'},
@@ -62,7 +63,8 @@ class ApiService {
   }
 
   // Get user profile
-  static Future<Map<String, dynamic>> getUserProfile(String userId, String token) async {
+  static Future<Map<String, dynamic>> getUserProfile(
+      String userId, String token) async {
     final response = await http.get(
       Uri.parse('$baseUrl/users/$userId'),
       headers: {
@@ -76,7 +78,8 @@ class ApiService {
     } else {
       try {
         final errorData = json.decode(response.body);
-        final errorMessage = errorData['message'] ?? 'Failed to get user profile';
+        final errorMessage =
+            errorData['message'] ?? 'Failed to get user profile';
         throw Exception(errorMessage);
       } catch (_) {
         throw Exception('Failed to get user profile');
@@ -110,8 +113,8 @@ class ApiService {
   }
 
   // Change password
-  static Future<void> changePassword(
-      String userId, String currentPassword, String newPassword, String token) async {
+  static Future<void> changePassword(String userId, String currentPassword,
+      String newPassword, String token) async {
     final response = await http.post(
       Uri.parse('$baseUrl/auth/change-password'),
       headers: {
@@ -128,7 +131,8 @@ class ApiService {
     if (response.statusCode != 200) {
       try {
         final errorData = json.decode(response.body);
-        final errorMessage = errorData['message'] ?? 'Failed to change password';
+        final errorMessage =
+            errorData['message'] ?? 'Failed to change password';
         throw Exception(errorMessage);
       } catch (_) {
         throw Exception('Failed to change password');
@@ -149,7 +153,8 @@ class ApiService {
     if (response.statusCode != 200) {
       try {
         final errorData = json.decode(response.body);
-        final errorMessage = errorData['message'] ?? 'Failed to process password reset';
+        final errorMessage =
+            errorData['message'] ?? 'Failed to process password reset';
         throw Exception(errorMessage);
       } catch (_) {
         throw Exception('Failed to process password reset');
@@ -180,7 +185,8 @@ class ApiService {
 
   // Reset Password
   static Future<void> resetPassword(String token, String newPassword) async {
-    final url = Uri.parse('$baseUrl/auth/reset-password/confirm'); // Adjust endpoint as needed
+    final url = Uri.parse(
+        '$baseUrl/auth/reset-password/confirm'); // Adjust endpoint as needed
 
     try {
       final response = await http.post(
@@ -205,6 +211,33 @@ class ApiService {
     } catch (e) {
       // Re-throw to be handled by the UI
       throw 'Password reset failed: $e';
+    }
+  }
+
+  // Upload profile picture
+  static Future<void> uploadProfilePicture(
+      String userId, File imageFile, String token) async {
+    if (kIsWeb) {
+      throw UnsupportedError('MultipartFile is not supported on the web.');
+    } else {
+      final request = http.MultipartRequest(
+          'POST', Uri.parse('$baseUrl/users/$userId/upload'));
+      request.headers['Authorization'] = 'Bearer $token';
+      request.files
+          .add(await http.MultipartFile.fromPath('file', imageFile.path));
+
+      final response = await request.send();
+
+      if (response.statusCode != 200) {
+        try {
+          final errorData = json.decode(await response.stream.bytesToString());
+          final errorMessage =
+              errorData['message'] ?? 'Failed to upload profile picture';
+          throw Exception(errorMessage);
+        } catch (_) {
+          throw Exception('Failed to upload profile picture');
+        }
+      }
     }
   }
 }

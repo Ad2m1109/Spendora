@@ -1,14 +1,14 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'dart:io' show Platform;
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show Uint8List, kIsWeb;
 
 class TransactionService {
   static String get baseUrl {
     if (kIsWeb) {
       return "http://localhost:5000";
     } else if (Platform.isAndroid || Platform.isIOS) {
-      return "http://192.168.0.197:5000";
+      return "http://192.168.10.119:5000";
     } else {
       return "http://localhost:5000";
     }
@@ -128,6 +128,71 @@ class TransactionService {
       } catch (_) {
         throw Exception('Failed to delete transaction');
       }
+    }
+  }
+
+  // Fetch dashboard metrics
+  static Future<Map<String, dynamic>> getDashboardMetrics(
+      String userId, String token) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/transactions/metrics'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({
+        'userId': userId,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      try {
+        final errorData = json.decode(response.body);
+        final errorMessage = errorData['message'] ?? 'Failed to fetch metrics';
+        throw Exception(errorMessage);
+      } catch (_) {
+        throw Exception('Failed to fetch metrics');
+      }
+    }
+  }
+
+  // Fetch income categories chart
+  static Future<Uint8List> getIncomeCategoriesChart(
+      String userId, String token) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/transactions/income-categories-chart'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({'userId': userId}),
+    );
+
+    if (response.statusCode == 200) {
+      return response.bodyBytes;
+    } else {
+      throw Exception('Failed to fetch income categories chart');
+    }
+  }
+
+  // Fetch daily net savings chart
+  static Future<Uint8List> getDailyNetSavingsChart(
+      String userId, String token) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/transactions/daily-net-savings-chart'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({'userId': userId}),
+    );
+
+    if (response.statusCode == 200) {
+      return response.bodyBytes;
+    } else {
+      throw Exception('Failed to fetch daily net savings chart');
     }
   }
 }

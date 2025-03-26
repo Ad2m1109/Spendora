@@ -8,7 +8,7 @@ class CategoryService {
     if (kIsWeb) {
       return "http://localhost:5000";
     } else if (Platform.isAndroid || Platform.isIOS) {
-      return "http://192.168.0.197:5000";
+      return "http://192.168.10.119:5000";
     } else {
       return "http://localhost:5000";
     }

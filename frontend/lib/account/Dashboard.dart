@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 import '../services/transaction_service.dart'; // Import the service
+import '../utils/user_preferences.dart'; // Import UserPreferences
 
 void main() {
   runApp(FinanceApp());
@@ -37,21 +38,34 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Uint8List? chartImage; // Unified variable for the currently loaded chart
   bool showExpenseChart = true; // Toggle between expense and income charts
   Uint8List? dailyNetSavingsChart;
+  String? userId; // Store the current user's ID
 
   @override
   void initState() {
     super.initState();
-    _fetchMetrics();
-    _fetchDailyNetSavingsChart(); // Fetch daily net savings chart
-    _loadExpenseChart(); // Load expense chart by default
+    _initializeUserId(); // Initialize userId
+  }
+
+  Future<void> _initializeUserId() async {
+    try {
+      final id = await UserPreferences.getUserId();
+      setState(() {
+        userId = id;
+      });
+      _fetchMetrics();
+      _fetchDailyNetSavingsChart();
+      _loadExpenseChart();
+    } catch (e) {
+      print("Error fetching user ID: $e");
+    }
   }
 
   Future<void> _fetchMetrics() async {
+    if (userId == null) return; // Ensure userId is available
     try {
-      final userId = 14; // Replace with the actual numeric userId
-      final token = "token"; // Replace with the actual token
-      final data = await TransactionService.getDashboardMetrics(
-          userId.toString(), token);
+      final token = await UserPreferences.getUserToken(); // Fetch token
+      final data =
+          await TransactionService.getDashboardMetrics(userId!, token!);
       setState(() {
         metrics = {
           'totalIncome': data['totalIncome'] ?? 0.0,
@@ -69,11 +83,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Future<void> _fetchDailyNetSavingsChart() async {
+    if (userId == null) return; // Ensure userId is available
     try {
-      final userId = 14; // Replace with the actual numeric userId
-      final token = "token"; // Replace with the actual token
-      final chart = await TransactionService.getDailyNetSavingsChart(
-          userId.toString(), token);
+      final token = await UserPreferences.getUserToken(); // Fetch token
+      final chart =
+          await TransactionService.getDailyNetSavingsChart(userId!, token!);
       setState(() {
         dailyNetSavingsChart = chart;
       });
@@ -83,9 +97,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Future<void> _loadExpenseChart() async {
+    if (userId == null) return; // Ensure userId is available
     try {
-      final userId = 14; // Replace with the actual numeric userId
-      final token = "token"; // Replace with the actual token
+      final token = await UserPreferences.getUserToken(); // Fetch token
       final response = await http.post(
         Uri.parse(
             '${TransactionService.baseUrl}/transactions/expense-categories-chart'),
@@ -109,9 +123,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Future<void> _loadIncomeChart() async {
+    if (userId == null) return; // Ensure userId is available
     try {
-      final userId = 14; // Replace with the actual numeric userId
-      final token = "token"; // Replace with the actual token
+      final token = await UserPreferences.getUserToken(); // Fetch token
       final response = await http.post(
         Uri.parse(
             '${TransactionService.baseUrl}/transactions/income-categories-chart'),

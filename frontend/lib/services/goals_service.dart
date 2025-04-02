@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter/foundation.dart' show kIsWeb;
 
-class CategoryService {
+class GoalsService {
   static String get baseUrl {
     if (kIsWeb) {
       return "http://localhost:5000";
@@ -14,10 +14,10 @@ class CategoryService {
     }
   }
 
-  static Future<List<Map<String, dynamic>>> getCategories() async {
+  static Future<List<Map<String, dynamic>>> fetchGoals(int userId) async {
     try {
       final response = await http.get(
-        Uri.parse('$baseUrl/categories'),
+        Uri.parse('$baseUrl/goals?userId=$userId'),
         headers: {'Content-Type': 'application/json'},
       );
 
@@ -26,38 +26,59 @@ class CategoryService {
     } on SocketException {
       throw Exception('No Internet connection. Please check your network.');
     } catch (e) {
-      throw Exception('Failed to load categories: ${e.toString()}');
+      throw Exception('Failed to load goals: ${e.toString()}');
     }
   }
 
-  static Future<void> addCategory(String categoryName) async {
+  static Future<int> createGoal(Map<String, dynamic> goalData) async {
     try {
       final response = await http.post(
-        Uri.parse('$baseUrl/categories'),
+        Uri.parse('$baseUrl/goals'),
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'categoryName': categoryName}),
+        body: jsonEncode({
+          ...goalData,
+          'currentAmount':
+              goalData['currentAmount'] ?? 0, // Default to 0 if not provided
+        }),
       );
 
       _validateResponse(response, successCode: 201);
+      return jsonDecode(response.body)['id'] as int;
     } on SocketException {
       throw Exception('No Internet connection. Please check your network.');
     } catch (e) {
-      throw Exception('Failed to add category: ${e.toString()}');
+      throw Exception('Failed to create goal: ${e.toString()}');
     }
   }
 
-  static Future<void> deleteCategory(int categoryId) async {
+  static Future<void> updateGoal(int goalId, double currentAmount) async {
     try {
-      final response = await http.delete(
-        Uri.parse('$baseUrl/categories/$categoryId'),
+      final response = await http.put(
+        Uri.parse('$baseUrl/goals/$goalId'),
         headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'currentAmount': currentAmount}),
       );
 
-      _validateResponse(response); // Validate the response
+      _validateResponse(response);
     } on SocketException {
       throw Exception('No Internet connection. Please check your network.');
     } catch (e) {
-      throw Exception('Failed to delete category: ${e.toString()}');
+      throw Exception('Failed to update goal: ${e.toString()}');
+    }
+  }
+
+  static Future<void> deleteGoal(int goalId) async {
+    try {
+      final response = await http.delete(
+        Uri.parse('$baseUrl/goals/$goalId'),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      _validateResponse(response);
+    } on SocketException {
+      throw Exception('No Internet connection. Please check your network.');
+    } catch (e) {
+      throw Exception('Failed to delete goal: ${e.toString()}');
     }
   }
 
@@ -65,7 +86,7 @@ class CategoryService {
       {int successCode = 200}) {
     if (response.statusCode != successCode) {
       final error =
-          jsonDecode(response.body)['error'] ?? 'Unknown error occurred';
+          jsonDecode(response.body)['message'] ?? 'Unknown error occurred';
       throw Exception('Server responded with: $error (${response.statusCode})');
     }
   }

@@ -25,3 +25,18 @@ class Category:
             sql = "SELECT * FROM categories WHERE categoryId = %s"
             cursor.execute(sql, (category_id,))
             return cursor.fetchone()
+
+    @staticmethod
+    def delete_category(category_id):
+        db = get_db()
+        try:
+            with db.cursor() as cursor:
+                sql = "DELETE FROM categories WHERE categoryId = %s"
+                cursor.execute(sql, (category_id,))
+                db.commit()
+                return cursor.rowcount
+        except Exception as e:
+            db.rollback()
+            raise Exception(f"Failed to delete category: {str(e)}")
+        finally:
+            db.close()

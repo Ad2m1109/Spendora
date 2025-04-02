@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/utils/user_preferences.dart'; // Import the user preferences utility
+import 'categories_page.dart'; // Import the CategoriesPage
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -172,7 +173,8 @@ class _HomePageState extends State<HomePage> {
               ),
               children: [
                 TextSpan(
-                  text: 'Start your journey to financial freedom today with Spendora! ',
+                  text:
+                      'Start your journey to financial freedom today with Spendora! ',
                 ),
                 WidgetSpan(
                   child: Padding(
@@ -198,7 +200,8 @@ class _HomePageState extends State<HomePage> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.green,
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30),
                 ),

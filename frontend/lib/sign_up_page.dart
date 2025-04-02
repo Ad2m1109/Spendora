@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/custom_scaffold.dart';
 import 'package:frontend/sign_in_page.dart';
 import 'package:frontend/services/api_service.dart';
+import 'package:google_sign_in/google_sign_in.dart'; // Import Google Sign In package
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -17,10 +18,39 @@ class _SignUpPageState extends State<SignUpPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+  // Initialize GoogleSignIn
+  final GoogleSignIn _googleSignIn = GoogleSignIn(
+    clientId:
+        '1094534390706-bjt8nkpk9hfkq8thcma1kff64k1rb8v2.apps.googleusercontent.com', // Updated client ID
+    scopes: [
+      'email',
+      'profile',
+    ],
+  );
+
   String errorMessage = '';
   String nameError = '';
   String emailError = '';
   String passwordError = '';
+  bool _isPasswordVisible = false; // Add this state variable
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    // Pre-fill data if provided via arguments
+    final args =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    if (args != null) {
+      _fullNameController.text = args['name'] ?? '';
+      _emailController.text = args['email'] ?? '';
+    }
+  }
 
   @override
   void dispose() {
@@ -43,6 +73,166 @@ class _SignUpPageState extends State<SignUpPage> {
     final hasLowercase = password.contains(RegExp(r'[a-z]'));
     final hasDigits = password.contains(RegExp(r'[0-9]'));
     return hasUppercase && hasLowercase && hasDigits && password.length > 7;
+  }
+
+  // Updated method to handle Google sign-up
+  Future<void> _signUpWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+
+      if (googleUser == null) {
+        // User canceled the sign-in process
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Google sign-up was canceled')),
+        );
+        return;
+      }
+
+      // Get user details from Google account
+      final String? displayName = googleUser.displayName;
+      final String? email = googleUser.email;
+
+      // Check if the user already exists
+      final userExists = await ApiService.checkUserExists(email!);
+
+      if (userExists) {
+        // Navigate to SignInPage and pre-fill the email field
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Complete your password.')),
+        );
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => SignInPage(initialEmail: email),
+          ),
+        );
+        return;
+      }
+
+      // Populate the form fields with Google account data
+      setState(() {
+        _fullNameController.text = displayName ?? 'Google User';
+        _emailController.text = email;
+        _passwordController.text = ''; // Leave password empty for user to fill
+      });
+
+      // Notify the user to complete the form
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Complete your password.')),
+      );
+    } catch (e) {
+      setState(() {
+        errorMessage = 'Google sign-up error: ${e.toString()}';
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Google sign-up error: $e')),
+      );
+    }
+  }
+
+  Future<void> _verifyEmail(
+      String email, String code, String expectedCode) async {
+    try {
+      final response = await ApiService.verifyEmail(
+          email, code, expectedCode); // Pass all required arguments
+      if (response) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Email verified successfully')),
+        );
+        // Proceed to the next step or navigate to the sign-in page
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Invalid verification code')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Verification failed: $e')),
+      );
+    }
+  }
+
+  Future<String> _sendVerificationEmail(String email) async {
+    try {
+      // Generate a random 6-character verification code
+      final verificationCode = List.generate(6, (index) {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        return chars[
+            (DateTime.now().millisecondsSinceEpoch + index) % chars.length];
+      }).join();
+
+      await ApiService.sendVerificationEmail(email, verificationCode);
+      return verificationCode;
+    } catch (e) {
+      throw Exception('Failed to send verification email: $e');
+    }
+  }
+
+  Future<void> _showVerificationDialog(
+      String email, String expectedCode) async {
+    final TextEditingController _codeController = TextEditingController();
+    bool isVerified = false;
+
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Email Verification'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('Enter the 6-digit code sent to your email.'),
+              TextField(
+                controller: _codeController,
+                keyboardType: TextInputType.number,
+                decoration:
+                    const InputDecoration(hintText: 'Verification Code'),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () async {
+                try {
+                  final isValid = await ApiService.verifyEmail(
+                    email,
+                    _codeController.text.trim(),
+                    expectedCode, // Pass expectedCode here
+                  );
+                  if (isValid) {
+                    isVerified = true;
+                    Navigator.of(context).pop();
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                          content: Text('Invalid verification code')),
+                    );
+                  }
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Verification failed: $e')),
+                  );
+                }
+              },
+              child: const Text('Verify'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancel'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (!isVerified) {
+      throw Exception('Verification failed or canceled');
+    }
   }
 
   Future<void> _signUp() async {
@@ -76,22 +266,53 @@ class _SignUpPageState extends State<SignUpPage> {
       }
 
       try {
+        // Check if the user already exists
+        final userExists = await ApiService.checkUserExists(
+          _emailController.text.trim(),
+        );
+
+        if (userExists) {
+          // Redirect to SignInPage
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('You already have an account.')),
+          );
+
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => SignInPage(
+                initialEmail: _emailController.text,
+              ),
+            ),
+          );
+          return;
+        }
+
+        // Send verification email and show dialog
+        final verificationCode =
+            await _sendVerificationEmail(_emailController.text.trim());
+        await _showVerificationDialog(
+            _emailController.text.trim(), verificationCode);
+
+        // Proceed with signup if verification is successful
         await ApiService.addUser({
           'fullName': _fullNameController.text,
           'email': _emailController.text,
           'password': _passwordController.text,
         });
 
-        setState(() {
-          errorMessage = '';
-        });
-
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Signup successful')),
+          const SnackBar(content: Text('Sign-up successful!')),
         );
+
+        // Navigate to SignInPage and populate inputs
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const SignInPage()),
+          MaterialPageRoute(
+            builder: (context) => SignInPage(
+              initialEmail: _emailController.text,
+            ),
+          ),
         );
       } catch (e) {
         setState(() {
@@ -99,7 +320,7 @@ class _SignUpPageState extends State<SignUpPage> {
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Signup failed: $e')),
+          SnackBar(content: Text('Sign-up failed: $e')),
         );
       }
     } else if (!agreePersonalData) {
@@ -190,7 +411,8 @@ class _SignUpPageState extends State<SignUpPage> {
                       // Password
                       TextFormField(
                         controller: _passwordController,
-                        obscureText: true,
+                        obscureText:
+                            !_isPasswordVisible, // Use the state variable
                         obscuringCharacter: '*',
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -208,6 +430,18 @@ class _SignUpPageState extends State<SignUpPage> {
                           ),
                           errorText:
                               passwordError.isNotEmpty ? passwordError : null,
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _isPasswordVisible
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _isPasswordVisible = !_isPasswordVisible;
+                              });
+                            },
+                          ),
                         ),
                       ),
                       const SizedBox(height: 25),
@@ -272,14 +506,20 @@ class _SignUpPageState extends State<SignUpPage> {
                         ],
                       ),
                       const SizedBox(height: 30),
-                      // Social media logos
+                      // Social media logos with tap functionality
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          Image.asset('assets/google.png',
-                              width: 38, height: 38),
-                          Image.asset('assets/facebook_icon.webp',
-                              width: 60, height: 60),
+                          // Google logo with tap functionality
+                          GestureDetector(
+                            onTap: _signUpWithGoogle,
+                            child: Image.asset(
+                              'assets/google.png',
+                              width: 38,
+                              height: 38,
+                            ),
+                          ),
+                          // Removed Facebook logo
                         ],
                       ),
                       const SizedBox(height: 25),

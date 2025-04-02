@@ -27,7 +27,9 @@ def add_category():
 @category_blueprint.route('/<int:category_id>', methods=['DELETE'])
 def delete_category(category_id):
     try:
-        # Add logic to delete a category (you'll need to implement this in the Category model)
-        return jsonify({"message": "Category deleted successfully"}), 200
+        rows_deleted = Category.delete_category(category_id)
+        if rows_deleted > 0:
+            return jsonify({"message": "Category deleted successfully"}), 200
+        return jsonify({"message": "Category not found"}), 404
     except Exception as e:
         return jsonify({"error": str(e)}), 500

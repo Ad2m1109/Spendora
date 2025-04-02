@@ -6,11 +6,11 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 class ApiService {
   static String get baseUrl {
     if (kIsWeb) {
-      return "http://localhost:5000";
+      return "http://localhost:5000"; // Ensure this matches your backend's redirect URI
     } else if (Platform.isAndroid || Platform.isIOS) {
-      return "http://192.168.10.119:5000";
+      return "http://192.168.1.10:5000"; // Update this if needed
     } else {
-      return "http://localhost:5000";
+      return "http://localhost:5000"; // Ensure this matches your backend's redirect URI
     }
   }
 
@@ -33,6 +33,26 @@ class ApiService {
         throw Exception(errorMessage);
       } catch (_) {
         throw Exception('Failed to add user');
+      }
+    }
+  }
+
+  static Future<void> addGoogleUser(Map<String, dynamic> userData) async {
+    final response = await http.post(
+      Uri.parse(
+          '$baseUrl/auth/google-signup'), // Ensure this matches your backend route
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(userData),
+    );
+
+    if (response.statusCode != 200) {
+      try {
+        final errorData = json.decode(response.body);
+        final errorMessage =
+            errorData['message'] ?? 'Failed to register Google user';
+        throw Exception(errorMessage);
+      } catch (_) {
+        throw Exception('Failed to register Google user');
       }
     }
   }
@@ -238,6 +258,49 @@ class ApiService {
           throw Exception('Failed to upload profile picture');
         }
       }
+    }
+  }
+
+  static Future<bool> checkUserExists(String email) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/auth/check-user-exists'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'email': email}),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return data['exists'];
+    } else {
+      throw Exception('Failed to check user existence');
+    }
+  }
+
+  static Future<bool> verifyEmail(
+      String email, String code, String expectedCode) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/auth/verify-email'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(
+          {'email': email, 'code': code, 'expectedCode': expectedCode}),
+    );
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      throw Exception('Failed to verify email');
+    }
+  }
+
+  static Future<void> sendVerificationEmail(String email, String code) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/auth/send-verification-email'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'email': email, 'code': code}),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to send verification email');
     }
   }
 }

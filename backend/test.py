@@ -1,16 +1,15 @@
 import pymysql
 
-# Database configuration (MAMP default credentials)
+
 config = {
     'host': 'localhost',
-    'port': 3306,  # MAMP MySQL port
+    'port': 3306, 
     'user': 'root',
     'password': 'root',
     'database': 'spendora',
     'cursorclass': pymysql.cursors.DictCursor
 }
 
-# Function to test database connection
 def test_db_connection():
     try:
         # Connect to the database

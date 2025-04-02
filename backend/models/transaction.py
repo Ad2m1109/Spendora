@@ -14,6 +14,12 @@ class Transaction:
                 """
                 cursor.execute(sql, (user_id, amount, date, description, category_id))
                 db.commit()
+
+                # Update goal's currentAmount if the category matches
+                if amount > 0:  # Only update for positive transactions
+                    from models.financial_goal import FinancialGoal
+                    FinancialGoal.update_goal_current_amount_by_category(category_id, amount)
+
                 return cursor.lastrowid
         except Exception as e:
             db.rollback()  # Rollback in case of error

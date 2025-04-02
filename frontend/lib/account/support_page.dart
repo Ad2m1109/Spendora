@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/profile_page.dart';
 import 'package:frontend/sign_in_page.dart';
 import 'package:frontend/account/dashboard.dart';
+import 'package:frontend/account/categories_page.dart'; // Import CategoriesPage
 
 class SupportPage extends StatelessWidget {
   const SupportPage({Key? key}) : super(key: key);
@@ -71,7 +72,8 @@ class SupportPage extends StatelessWidget {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => DashboardScreen()),
+                        MaterialPageRoute(
+                            builder: (context) => DashboardScreen()),
                       );
                     },
                   ),
@@ -84,6 +86,19 @@ class SupportPage extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => ProfilePage()),
+                      );
+                    },
+                  ),
+                  // Categories Management
+                  _buildSupportItem(
+                    'Manage Categories',
+                    'Add, edit, or delete your financial categories',
+                    Icons.category,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const CategoriesPage()),
                       );
                     },
                   ),
@@ -130,7 +145,8 @@ class SupportPage extends StatelessWidget {
     );
   }
 
-  Widget _buildSupportItem(String title, String description, IconData iconData, {VoidCallback? onTap}) {
+  Widget _buildSupportItem(String title, String description, IconData iconData,
+      {VoidCallback? onTap}) {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       elevation: 2,

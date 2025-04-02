@@ -5,9 +5,13 @@ import 'package:frontend/services/api_service.dart';
 import 'package:frontend/home_screen.dart';
 import 'package:frontend/utils/user_preferences.dart';
 import 'package:frontend/forgot_password_page.dart';
+import 'package:google_sign_in/google_sign_in.dart'; // Import Google Sign-In package
 
 class SignInPage extends StatefulWidget {
-  const SignInPage({super.key});
+  final String? initialEmail;
+  final String? initialPassword;
+
+  const SignInPage({super.key, this.initialEmail, this.initialPassword});
 
   @override
   State<SignInPage> createState() => _SignInPageState();
@@ -17,15 +21,28 @@ class _SignInPageState extends State<SignInPage> {
   final _formSignInKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final GoogleSignIn _googleSignIn = GoogleSignIn(
+    clientId:
+        '1094534390706-bjt8nkpk9hfkq8thcma1kff64k1rb8v2.apps.googleusercontent.com', // Updated client ID
+    scopes: [
+      'email',
+      'profile',
+    ],
+  );
 
   bool rememberPassword = true;
   String errorMessage = '';
+  bool _isPasswordVisible = false;
 
   @override
   void initState() {
     super.initState();
-    // Load saved credentials when the page initializes
-    _loadSavedCredentials();
+    if (widget.initialEmail != null) {
+      _emailController.text = widget.initialEmail!;
+    }
+    if (widget.initialPassword != null) {
+      _passwordController.text = widget.initialPassword!;
+    }
   }
 
   Future<void> _loadSavedCredentials() async {
@@ -54,9 +71,11 @@ class _SignInPageState extends State<SignInPage> {
 
         // Store user information
         final userId = response['userId'].toString();
-        final name = response['name']; // Assuming the API returns the user's name
+        final name =
+            response['name']; // Assuming the API returns the user's name
         final email = _emailController.text.trim();
-        final token = response['token']; // Ensure this matches your API response
+        final token =
+            response['token']; // Ensure this matches your API response
 
         // Save user info and token
         await UserPreferences.saveUserInfo(userId, name, email);
@@ -66,8 +85,7 @@ class _SignInPageState extends State<SignInPage> {
         await UserPreferences.saveRememberedCredentials(
             _emailController.text.trim(),
             _passwordController.text,
-            rememberPassword
-        );
+            rememberPassword);
 
         // Debug logs
         print('UserId saved: $userId');
@@ -94,6 +112,41 @@ class _SignInPageState extends State<SignInPage> {
           backgroundColor: Colors.red,
         ));
       }
+    }
+  }
+
+  Future<void> _signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+
+      if (googleUser == null) {
+        // User canceled the sign-in process
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Google sign-in was canceled')),
+        );
+        return;
+      }
+
+      // Get user details from Google account
+      final String? email = googleUser.email;
+
+      // Populate the email field with the Google account email
+      setState(() {
+        _emailController.text = email ?? '';
+      });
+
+      // Notify the user to enter their password
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('Please enter your password to continue.')),
+      );
+
+      // Focus on the password field
+      FocusScope.of(context).requestFocus(FocusNode());
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Google login error: $e')),
+      );
     }
   }
 
@@ -158,7 +211,8 @@ class _SignInPageState extends State<SignInPage> {
                       // Password TextField
                       TextFormField(
                         controller: _passwordController,
-                        obscureText: true,
+                        obscureText:
+                            !_isPasswordVisible, // Use the state variable
                         obscuringCharacter: '*',
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -176,6 +230,18 @@ class _SignInPageState extends State<SignInPage> {
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderSide: const BorderSide(color: Colors.black38),
+                          ),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _isPasswordVisible
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _isPasswordVisible = !_isPasswordVisible;
+                              });
+                            },
                           ),
                         ),
                       ),
@@ -217,7 +283,8 @@ class _SignInPageState extends State<SignInPage> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => const ForgotPasswordPage(),
+                                    builder: (context) =>
+                                        const ForgotPasswordPage(),
                                   ),
                                 );
                               },
@@ -240,6 +307,19 @@ class _SignInPageState extends State<SignInPage> {
                         child: ElevatedButton(
                           onPressed: signInUser,
                           child: const Text("Sign In"),
+                        ),
+                      ),
+                      const SizedBox(height: 25),
+                      // Sign in with Google button
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton.icon(
+                          onPressed: _signInWithGoogle,
+                          icon: const Icon(Icons.login),
+                          label: const Text("Sign in with Google"),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.red, // Google button color
+                          ),
                         ),
                       ),
                       const SizedBox(height: 25),

@@ -58,7 +58,7 @@ flutter:
     - assets/transaction.png
     - assets/goal.png
     - assets/support.png
-    - assets/anonymous_user.jpg  # Add this line
+    - assets/anonymous_user.jpg
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.

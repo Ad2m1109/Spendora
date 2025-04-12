@@ -153,32 +153,49 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return Scaffold(
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
-        title: Text('Finance Dashboard',
-            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
-        backgroundColor: Colors.white,
+        title: const Text(
+          'Finance Dashboard',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.white, // Updated title color
+          ),
+        ),
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Color.fromRGBO(25, 65, 55, 1),
+                Color.fromRGBO(166, 235, 78, 1),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
         elevation: 0,
         actions: [
           IconButton(
-            icon: Icon(Icons.settings, color: Colors.black),
+            icon: const Icon(Icons.settings, color: Colors.white),
             onPressed: () {},
           ),
         ],
       ),
       body: isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
-              padding: EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     'Overview',
                     style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
+                      color: Color.fromRGBO(25, 65, 55, 1), // Updated color
                     ),
                   ),
-                  SizedBox(height: 16.0),
+                  const SizedBox(height: 16.0),
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
@@ -187,47 +204,52 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           'Total Income',
                           '\$${metrics['totalIncome'] ?? '0.00'}',
                           Icons.arrow_upward,
-                          Colors.green,
+                          const Color.fromRGBO(76, 175, 80, 1), // Green
                         ),
-                        SizedBox(
-                            width:
-                                4.0), // Reduced from 16.0 to 4.0 to move "Total Expenses" left
+                        const SizedBox(width: 16.0),
                         _buildMetricCard(
                           'Total Expenses',
                           '\$${metrics['totalExpenses'] ?? '0.00'}',
                           Icons.arrow_downward,
-                          Colors.red,
+                          const Color.fromRGBO(244, 67, 54, 1), // Red
                         ),
                       ],
                     ),
                   ),
-                  SizedBox(height: 16.0),
+                  const SizedBox(height: 16.0),
                   _buildMetricCard(
                     'Net Savings',
                     '\$${metrics['netSavings'] ?? '0.00'}',
                     Icons.savings,
-                    Colors.blue,
+                    const Color.fromRGBO(33, 150, 243, 1), // Blue
                     fullWidth: true,
                   ),
-                  SizedBox(height: 24.0),
-                  // Monthly Chart Placeholder
-                  Text(
-                    'Everyday Overview', // Updated title
+                  const SizedBox(height: 24.0),
+                  const Text(
+                    'Everyday Overview',
                     style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
+                      color: Color.fromRGBO(25, 65, 55, 1), // Updated color
                     ),
                   ),
-                  SizedBox(height: 16.0),
+                  const SizedBox(height: 16.0),
                   Container(
-                    height: 400, // Adjusted height for the chart
-                    padding: EdgeInsets.all(16.0),
+                    height: 400,
+                    padding: const EdgeInsets.all(16.0),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      gradient: const LinearGradient(
+                        colors: [
+                          Color.fromRGBO(166, 235, 78, 0.2),
+                          Colors.white,
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
                       borderRadius: BorderRadius.circular(16.0),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
+                          color: Colors.black.withOpacity(0.1),
                           blurRadius: 10.0,
                           spreadRadius: 1.0,
                         ),
@@ -235,21 +257,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     ),
                     child: Center(
                       child: dailyNetSavingsChart == null
-                          ? CircularProgressIndicator() // Show loading indicator while chart is being fetched
-                          : Image.memory(
-                              dailyNetSavingsChart!), // Display the chart
+                          ? const CircularProgressIndicator()
+                          : Image.memory(dailyNetSavingsChart!),
                     ),
                   ),
-                  SizedBox(height: 24.0),
-                  // Expense Categories
-                  Text(
+                  const SizedBox(height: 24.0),
+                  const Text(
                     'Categories',
                     style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
+                      color: Color.fromRGBO(25, 65, 55, 1), // Updated color
                     ),
                   ),
-                  SizedBox(height: 16.0),
+                  const SizedBox(height: 16.0),
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
@@ -260,51 +281,58 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             if (!showExpenseChart) {
                               setState(() {
                                 showExpenseChart = true;
-                                chartImage = null; // Clear current chart
+                                chartImage = null;
                               });
-                              _loadExpenseChart(); // Load expense chart
+                              _loadExpenseChart();
                             }
                           },
-                          child: Text('Expense Categories'),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                showExpenseChart ? Colors.blue : Colors.grey,
+                            backgroundColor: showExpenseChart
+                                ? const Color.fromRGBO(25, 65, 55, 1)
+                                : Colors.grey,
+                            foregroundColor: Colors.white,
                           ),
+                          child: const Text('Expense Categories'),
                         ),
-                        SizedBox(width: 16.0), // Proper spacing between buttons
-                        Transform.translate(
-                          offset:
-                              Offset(-5.9, 0), // Move 5.9 pixels to the left
-                          child: ElevatedButton(
-                            onPressed: () {
-                              if (showExpenseChart) {
-                                setState(() {
-                                  showExpenseChart = false;
-                                  chartImage = null; // Clear current chart
-                                });
-                                _loadIncomeChart(); // Load income chart
-                              }
-                            },
-                            child: Text('Income Categories'),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor:
-                                  !showExpenseChart ? Colors.blue : Colors.grey,
-                            ),
+                        const SizedBox(width: 16.0),
+                        ElevatedButton(
+                          onPressed: () {
+                            if (showExpenseChart) {
+                              setState(() {
+                                showExpenseChart = false;
+                                chartImage = null;
+                              });
+                              _loadIncomeChart();
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: !showExpenseChart
+                                ? const Color.fromRGBO(25, 65, 55, 1)
+                                : Colors.grey,
+                            foregroundColor: Colors.white,
                           ),
+                          child: const Text('Income Categories'),
                         ),
                       ],
                     ),
                   ),
-                  SizedBox(height: 16.0),
+                  const SizedBox(height: 16.0),
                   Container(
-                    height: 400, // Increased the height of the box
-                    padding: EdgeInsets.all(16.0),
+                    height: 400,
+                    padding: const EdgeInsets.all(16.0),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      gradient: const LinearGradient(
+                        colors: [
+                          Color.fromRGBO(166, 235, 78, 0.2),
+                          Colors.white,
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
                       borderRadius: BorderRadius.circular(16.0),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
+                          color: Colors.black.withOpacity(0.1),
                           blurRadius: 10.0,
                           spreadRadius: 1.0,
                         ),
@@ -312,14 +340,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     ),
                     child: Center(
                       child: chartImage == null
-                          ? CircularProgressIndicator() // Show loading indicator while chart is being fetched
+                          ? const CircularProgressIndicator()
                           : _buildPieChart(chartImage),
                     ),
                   ),
                 ],
               ),
             ),
-      floatingActionButton: null,
     );
   }
 
@@ -327,9 +354,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
       String title, String amount, IconData icon, Color color,
       {bool fullWidth = false}) {
     return Container(
-      padding: EdgeInsets.all(16.0),
+      width: fullWidth ? double.infinity : 180,
+      padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
-        color: Colors.white,
+        gradient: LinearGradient(
+          colors: [
+            color.withOpacity(0.1),
+            Colors.white,
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
         borderRadius: BorderRadius.circular(16.0),
         boxShadow: [
           BoxShadow(
@@ -347,32 +382,33 @@ class _DashboardScreenState extends State<DashboardScreen> {
             children: [
               Text(
                 title,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
-                  color: Colors.grey[700],
+                  color: Color.fromRGBO(25, 65, 55, 1), // Updated color
                 ),
               ),
               Container(
-                padding: EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(8.0),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
+                  color: color.withOpacity(0.2),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(icon, color: color, size: 20),
               ),
             ],
           ),
-          SizedBox(height: 8.0),
+          const SizedBox(height: 8.0),
           Text(
             amount,
             style: TextStyle(
               fontSize: fullWidth ? 28 : 22,
               fontWeight: FontWeight.bold,
+              color: color,
             ),
           ),
-          SizedBox(height: 8.0),
-          Text(
+          const SizedBox(height: 8.0),
+          const Text(
             'Tap for details',
             style: TextStyle(
               fontSize: 12,
@@ -383,26 +419,26 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ),
     );
   }
+}
 
-  Widget _buildBarChart() {
-    return CustomPaint(
-      size: Size(double.infinity, 200),
-      painter: BarChartPainter(),
-    );
-  }
+Widget _buildBarChart() {
+  return CustomPaint(
+    size: Size(double.infinity, 200),
+    painter: BarChartPainter(),
+  );
+}
 
-  Widget _buildPieChart(Uint8List? chartImage) {
-    if (chartImage == null) {
-      return Text(
-        'No data available',
-        style: TextStyle(color: Colors.grey),
-      ); // Fallback if no image is available
-    }
-    return FittedBox(
-      fit: BoxFit.contain,
-      child: Image.memory(chartImage),
-    );
+Widget _buildPieChart(Uint8List? chartImage) {
+  if (chartImage == null) {
+    return Text(
+      'No data available',
+      style: TextStyle(color: Colors.grey),
+    ); // Fallback if no image is available
   }
+  return FittedBox(
+    fit: BoxFit.contain,
+    child: Image.memory(chartImage),
+  );
 }
 
 // Simple bar chart painter (design only)

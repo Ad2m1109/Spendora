@@ -7,15 +7,12 @@ from controllers.category_controller import category_blueprint
 from controllers.user_controller import user_blueprint 
 from controllers.goal_controller import goal_blueprint 
 import os
-from dotenv import load_dotenv  # Import load_dotenv
+from dotenv import load_dotenv
 
-# Explicitly load the .env file
 load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), '../.env'))
 
-# DEBUG: Print environment variable
 print(f"DEBUG: EMAIL_APP_PASSWORD={os.getenv('EMAIL_APP_PASSWORD')}")
 
-# Initialize Flask app
 app = Flask(__name__)
 CORS(app)
 app.config.from_object(Config)

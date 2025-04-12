@@ -1,18 +1,16 @@
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-import os  # Import os to access environment variables
+import os  
 
 def send_verification_email(email, code):
     sender_email = "spendaura85@gmail.com"
-    sender_password = os.getenv("EMAIL_APP_PASSWORD")  # Retrieve app password from environment variable
-
-    print(f"DEBUG: EMAIL_APP_PASSWORD={sender_password}")  # Debugging line
+    sender_password = os.getenv("EMAIL_APP_PASSWORD")  
 
     if not sender_password:
         raise Exception("App password for email is not set in environment variables.")
-
-    subject = "Email Verification Code"
+    #professionel email:
+    subject = "Email Verification Code for Spendaura"
     body = f"Your verification code is: {code}"
 
     msg = MIMEMultipart()

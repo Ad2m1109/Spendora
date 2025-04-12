@@ -131,7 +131,11 @@ class _CategoriesPageState extends State<CategoriesPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Categories'),
+        title: const Text(
+          'Categories',
+          style: TextStyle(
+              color: Color.fromRGBO(166, 235, 78, 1)), // Updated title color
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
@@ -150,7 +154,9 @@ class _CategoriesPageState extends State<CategoriesPage> {
                     return ListTile(
                       title: Text(category['categoryName']),
                       trailing: IconButton(
-                        icon: const Icon(Icons.delete, color: Colors.red),
+                        icon: const Icon(Icons.delete,
+                            color: Color.fromRGBO(
+                                25, 65, 55, 1)), // Updated icon color
                         onPressed: () =>
                             _confirmDeleteCategory(category['categoryId']),
                       ),

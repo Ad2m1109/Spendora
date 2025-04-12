@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from models.user import User
 import bcrypt
-import jwt  # Ensure this is PyJWT
+import jwt
 import datetime
 import os
 from services.google_auth_service import verify_google_token
@@ -18,29 +18,21 @@ def register():
     email = data.get('email')
     password = data.get('password')
 
-    # Input validation
     if not all([name, email, password]):
         return jsonify({"message": "Missing required fields"}), 400
 
-    # Check if user already exists
     existing_user = User.get_user_by_email(email)
     if existing_user:
         return jsonify({"message": "User already exists"}), 400
 
     try:
-        # Create user
         user_id = User.create_user(name, email, password)
-
-        # Generate a random 6-character verification code
         verification_code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
-
-        # Send verification email
         send_verification_email(email, verification_code)
-
         return jsonify({
             "message": "User registered successfully. Verification email sent.",
             "userId": user_id,
-            "verificationCode": verification_code  # Return the code for testing purposes (remove in production)
+            "verificationCode": verification_code 
         }), 201
     except Exception as e:
         return jsonify({"message": f"Registration failed: {str(e)}"}), 500
@@ -50,7 +42,7 @@ def verify_email():
     data = request.get_json()
     email = data.get('email')
     code = data.get('code')
-    expected_code = data.get('expectedCode')  # Pass the expected code from the frontend
+    expected_code = data.get('expectedCode') 
 
     if not all([email, code, expected_code]):
         return jsonify({"message": "Missing email, code, or expected code"}), 400

@@ -54,7 +54,11 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Transaction'),
+        title: Text(
+          'Add Transaction',
+          style: TextStyle(
+              color: Color.fromRGBO(166, 235, 78, 1)), // Updated title color
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -84,7 +88,9 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                     ),
                   ),
                   IconButton(
-                    icon: Icon(Icons.calendar_today),
+                    icon: Icon(Icons.calendar_today,
+                        color: Color.fromRGBO(
+                            25, 65, 55, 1)), // Updated icon color
                     onPressed: () => _selectDate(context),
                   ),
                 ],

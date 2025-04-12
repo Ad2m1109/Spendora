@@ -322,7 +322,18 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Colors.green,
+                Color.fromRGBO(166, 235, 78, 1),
+              ],
+            ),
+          ),
+        ),
         elevation: 0,
         title: const Text(
           'My Profile',
@@ -330,111 +341,122 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
         iconTheme: const IconThemeData(color: Colors.white),
       ),
-      backgroundColor: Colors.green,
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: ListView(
-          children: [
-            Center(
-              child: Stack(
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white, width: 4),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Colors.green,
+              Colors.lightGreen,
+            ],
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: ListView(
+            children: [
+              Center(
+                child: Stack(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white, width: 4),
+                      ),
+                      child: CircleAvatar(
+                        radius: 70,
+                        backgroundImage: _imageFile != null
+                            ? FileImage(_imageFile!) as ImageProvider
+                            : (profileImageUrl.isNotEmpty && !imageLoadError
+                                    ? NetworkImage(profileImageUrl)
+                                    : const AssetImage(
+                                        'assets/anonymous_user.jpg'))
+                                as ImageProvider,
+                        onBackgroundImageError: (exception, stackTrace) {
+                          print("Error loading image: $exception");
+                          setState(() {
+                            imageLoadError = true;
+                          });
+                        },
+                      ),
                     ),
-                    child: CircleAvatar(
-                      radius: 70,
-                      backgroundImage: _imageFile != null
-                          ? FileImage(_imageFile!) as ImageProvider
-                          : (profileImageUrl.isNotEmpty && !imageLoadError
-                                  ? NetworkImage(profileImageUrl)
-                                  : const AssetImage(
-                                      'assets/anonymous_user.jpg'))
-                              as ImageProvider,
-                      onBackgroundImageError: (exception, stackTrace) {
-                        print("Error loading image: $exception");
-                        setState(() {
-                          imageLoadError = true;
-                        });
-                      },
-                    ),
-                  ),
-                  Positioned(
-                    bottom: 0,
-                    right: 0,
-                    child: GestureDetector(
-                      onTap: _showImageSourceDialog,
-                      child: Container(
-                        height: 40,
-                        width: 40,
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.camera_alt,
-                          color: Colors.green,
+                    Positioned(
+                      bottom: 0,
+                      right: 0,
+                      child: GestureDetector(
+                        onTap: _showImageSourceDialog,
+                        child: Container(
+                          height: 40,
+                          width: 40,
+                          decoration: const BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.camera_alt,
+                            color: Color.fromRGBO(25, 65, 55, 1),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(height: 24),
-            _buildProfileItem(
-              'Name',
-              name,
-              Icons.person,
-              () => _showEditDialog(
+              const SizedBox(height: 24),
+              _buildProfileItem(
                 'Name',
                 name,
-                _nameController,
-                (value) => setState(() => name = value),
-              ),
-            ),
-            const SizedBox(height: 16),
-            _buildProfileItem(
-              'Email',
-              email,
-              Icons.email,
-              () => ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Email cannot be changed')),
-              ),
-            ),
-            const SizedBox(height: 16),
-            _buildProfileItem(
-              'Password',
-              '••••••',
-              Icons.lock,
-              () => _showEditDialog(
-                'Password',
-                '',
-                _passwordController,
-                (value) => _changePassword(value),
-                isPassword: true,
-              ),
-            ),
-            const SizedBox(height: 32),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                foregroundColor: Colors.green,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                Icons.person,
+                () => _showEditDialog(
+                  'Name',
+                  name,
+                  _nameController,
+                  (value) => setState(() => name = value),
                 ),
-                minimumSize: Size(0, 0),
               ),
-              onPressed: _updateProfile,
-              child: const Text(
-                'Save Changes',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              const SizedBox(height: 16),
+              _buildProfileItem(
+                'Email',
+                email,
+                Icons.email,
+                () => ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Email cannot be changed')),
+                ),
               ),
-            ),
-            const SizedBox(height: 16),
-          ],
+              const SizedBox(height: 16),
+              _buildProfileItem(
+                'Password',
+                '••••••',
+                Icons.lock,
+                () => _showEditDialog(
+                  'Password',
+                  '',
+                  _passwordController,
+                  (value) => _changePassword(value),
+                  isPassword: true,
+                ),
+              ),
+              const SizedBox(height: 32),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  foregroundColor: Color.fromRGBO(25, 65, 55, 1),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  minimumSize: Size(0, 0),
+                ),
+                onPressed: _updateProfile,
+                child: const Text(
+                  'Save Changes',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
+          ),
         ),
       ),
     );
@@ -472,7 +494,7 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
           child: Icon(
             icon,
-            color: Colors.green,
+            color: Color.fromRGBO(25, 65, 55, 1),
           ),
         ),
         trailing: GestureDetector(
@@ -485,7 +507,7 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             child: const Icon(
               Icons.edit,
-              color: Colors.green,
+              color: Color.fromRGBO(25, 65, 55, 1),
               size: 20,
             ),
           ),

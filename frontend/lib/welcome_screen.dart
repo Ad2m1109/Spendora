@@ -55,7 +55,7 @@ class WelcomeScreen extends StatelessWidget {
                           );
                         },
                         color: Colors.transparent,
-                        textColor: Colors.black,
+                        textColor: const Color.fromARGB(255, 255, 255, 255),
                       )),
                       Expanded(
                           child: WelcomeButton(

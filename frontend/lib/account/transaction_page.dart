@@ -140,32 +140,10 @@ class _TransactionPageState extends State<TransactionPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text('Transactions'),
-            DropdownButton<int>(
-              value: _selectedCategoryFilter,
-              hint: Text('Filter by Category'),
-              items: [
-                DropdownMenuItem<int>(
-                  value: null,
-                  child: Text('All Categories'),
-                ),
-                ...categoryMap.entries.map((entry) {
-                  return DropdownMenuItem<int>(
-                    value: entry.key,
-                    child: Text(entry.value),
-                  );
-                }).toList(),
-              ],
-              onChanged: (int? newValue) {
-                setState(() {
-                  _selectedCategoryFilter = newValue;
-                });
-              },
-            ),
-          ],
+        title: Text(
+          'Transactions',
+          style: TextStyle(
+              color: Color.fromRGBO(166, 235, 78, 1)), // Updated title color
         ),
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
@@ -213,7 +191,9 @@ class _TransactionPageState extends State<TransactionPage> {
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   IconButton(
-                                    icon: Icon(Icons.edit, color: Colors.blue),
+                                    icon: Icon(Icons.edit,
+                                        color: Color.fromRGBO(25, 65, 55,
+                                            1)), // Updated icon color
                                     onPressed: () {
                                       Navigator.push(
                                         context,
@@ -227,7 +207,9 @@ class _TransactionPageState extends State<TransactionPage> {
                                     },
                                   ),
                                   IconButton(
-                                    icon: Icon(Icons.delete, color: Colors.red),
+                                    icon: Icon(Icons.delete,
+                                        color: Color.fromRGBO(25, 65, 55,
+                                            1)), // Updated icon color
                                     onPressed: () => _confirmDeleteTransaction(
                                         transaction['transactionId']),
                                   ),
@@ -249,6 +231,8 @@ class _TransactionPageState extends State<TransactionPage> {
           ).then(
               (_) => _loadTransactions()); // Refresh transactions after adding
         },
+        backgroundColor:
+            Color.fromRGBO(166, 235, 78, 1), // Updated button color
         child: Icon(Icons.add),
       ),
     );

@@ -226,7 +226,7 @@ class _GoalPageState extends State<GoalPage> {
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
-              color: Colors.green,
+              color: Color.fromRGBO(166, 235, 78, 1), // Updated title color
             ),
           ),
           const SizedBox(height: 20),
@@ -260,7 +260,7 @@ class _GoalPageState extends State<GoalPage> {
           ElevatedButton(
             onPressed: _addNewGoal,
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green,
+              backgroundColor: Color.fromRGBO(166, 235, 78, 1),
               foregroundColor: Colors.white,
               minimumSize: const Size(double.infinity, 50),
             ),
@@ -283,7 +283,8 @@ class _GoalPageState extends State<GoalPage> {
           children: [
             Row(
               children: [
-                Icon(iconData, color: Colors.green),
+                Icon(iconData,
+                    color: Color.fromRGBO(25, 65, 55, 1)), // Updated icon color
                 const SizedBox(width: 8),
                 Text(
                   title,

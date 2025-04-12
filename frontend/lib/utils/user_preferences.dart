@@ -5,7 +5,7 @@ class UserPreferences {
   static const _keyUserId = 'userId';
   static const _keyName = 'name';
   static const _keyEmail = 'email';
-  static const _keyToken = 'token'; // Added for token management
+  static const _keyToken = 'token'; 
   static const _keyRememberMe = 'rememberMe';
   static const _keyRememberedEmail = 'remembered_email';
   static const _keyRememberedPassword = 'remembered_password';

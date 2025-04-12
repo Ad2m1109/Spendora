@@ -85,7 +85,11 @@ class _EditTransactionPageState extends State<EditTransactionPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Edit Transaction'),
+        title: Text(
+          'Edit Transaction',
+          style: TextStyle(
+              color: Color.fromRGBO(166, 235, 78, 1)), // Updated title color
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -115,7 +119,9 @@ class _EditTransactionPageState extends State<EditTransactionPage> {
                     ),
                   ),
                   IconButton(
-                    icon: Icon(Icons.calendar_today),
+                    icon: Icon(Icons.calendar_today,
+                        color: Color.fromRGBO(
+                            25, 65, 55, 1)), // Updated icon color
                     onPressed: () => _selectDate(context),
                   ),
                 ],

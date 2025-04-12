@@ -310,17 +310,19 @@ class _SignInPageState extends State<SignInPage> {
                         ),
                       ),
                       const SizedBox(height: 25),
-                      // Sign in with Google button
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton.icon(
-                          onPressed: _signInWithGoogle,
-                          icon: const Icon(Icons.login),
-                          label: const Text("Sign in with Google"),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.red, // Google button color
+                      // Sign in with Google icon
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          GestureDetector(
+                            onTap: _signInWithGoogle,
+                            child: Image.asset(
+                              'assets/google.png',
+                              width: 38,
+                              height: 38,
+                            ),
                           ),
-                        ),
+                        ],
                       ),
                       const SizedBox(height: 25),
                       // Sign Up navigation

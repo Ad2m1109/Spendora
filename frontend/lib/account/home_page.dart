@@ -45,7 +45,15 @@ class _HomePageState extends State<HomePage> {
                 color: Colors.green,
               ),
               children: [
-                const TextSpan(text: 'Welcome to Spendora, '),
+                const TextSpan(
+                  text: 'Welcome to Spendora, ',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color:
+                        Color.fromRGBO(166, 235, 78, 1), // Updated title color
+                  ),
+                ),
                 TextSpan(
                   text: userName,
                   style: const TextStyle(

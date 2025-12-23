@@ -1145,33 +1145,3 @@ This project was developed as part of a portfolio for Master's degree applicatio
   
   *If you find this project helpful, please consider giving it a ⭐ on GitHub!*
 </div>
-
----
-
-## 🔧 Troubleshooting
-
-### Common Issues
-
-**Backend not starting?**
-- Check if port 5000 is available
-- Ensure all environment variables are set
-- Verify Python dependencies are installed
-
-**Flutter build fails?**
-- Run `flutter clean` and `flutter pub get`
-- Check Flutter and Dart SDK versions
-- Ensure all required tools are installed
-
-**Charts not displaying?**
-- Verify Matplotlib is properly installed
-- Check backend logs for errors
-- Ensure API endpoint is correct in Flutter app
-
-**API connection issues?**
-- Use correct IP for emulator (10.0.2.2 for Android)
-- Check CORS settings in Flask
-- Verify network permissions in Flutter
-
----
-
-**Thank you for your interest in Spendaura! We hope this project demonstrates the potential of AI in improving financial literacy and decision-making.**

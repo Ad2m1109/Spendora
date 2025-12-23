@@ -1017,24 +1017,6 @@ If you use Spendaura in your research or build upon this work, please cite:
   </tr>
 </table>
 
-### Roles & Responsibilities
-
-**Adem Youssfi** - Backend & AI
-- Flask API architecture and implementation
-- Matplotlib chart generation system
-- LLM integration and prompt engineering
-- Database design and ORM implementation
-- ML model development (forecasting, analysis)
-- API documentation and testing
-
-**Aladin Daly** - Frontend & Mobile
-- Flutter application development
-- UI/UX design and implementation
-- State management and data flow
-- API integration on mobile side
-- Performance optimization
-- Cross-platform testing (iOS/Android)
-
 ---
 
 ## 🙏 Acknowledgments

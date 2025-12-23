@@ -949,14 +949,6 @@ if it's truly needed.
 
 ---
 
-## 📚 Publications & Citations
-
-### Conference Presentations (Planned)
-
-1. **Youssfi, A.**, Daly, A. (2025). "Mobile-First AI Financial Advisory: A Flask and Flutter Implementation." *International Conference on Mobile Computing and Applications* (Submitted)
-
-2. **Youssfi, A.**, Daly, A. (2025). "Server-Side Chart Generation for Mobile Finance Applications using Matplotlib." *IEEE International Conference on Data Visualization* (In Preparation)
-
 ### Technical Reports
 
 1. Spendaura: System Architecture and Implementation (2024)
@@ -988,36 +980,6 @@ If you use Spendaura in your research or build upon this work, please cite:
 
 ---
 
-## 👥 Contributors
-
-<table>
-  <tr>
-    <td align="center">
-      <a href="https://github.com/Ad2m1109">
-        <img src="https://avatars.githubusercontent.com/u/168112606?v=4" width="100px;" alt=""/>
-        <br />
-        <sub><b>Adem Youssfi</b></sub>
-      </a>
-      <br />
-      <sub>Lead Developer & Researcher</sub>
-      <br />
-      <sub>Backend (Flask), AI/ML, Data Visualization</sub>
-    </td>
-    <td align="center">
-      <a href="https://github.com/alaeddinedaly">
-        <img src="https://avatars.githubusercontent.com/u/191285956?v=4" width="100px;" alt=""/>
-        <br />
-        <sub><b>Aladin Daly</b></sub>
-      </a>
-      <br />
-      <sub>Frontend Developer</sub>
-      <br />
-      <sub>Flutter, Mobile UI/UX</sub>
-    </td>
-  </tr>
-</table>
-
----
 
 ## 🙏 Acknowledgments
 
